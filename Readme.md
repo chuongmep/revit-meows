@@ -90,7 +90,6 @@ urn = bim360.get_latest_derivative_urn("<project_id>","<folder_id>")
 2. You can batch report urn to dataframe from BIM360 class in `aps-toolkit` library.
 
 ```python
-url = "https://acc.autodesk.com/docs/files/projects/....?version=urn%3Aadsk.wipprod%3Afs.file%3A...."
 from aps_toolkit import BIM360
 from aps_toolkit import Auth
 token  = Auth().auth3leg()
