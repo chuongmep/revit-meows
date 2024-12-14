@@ -31,7 +31,7 @@ from revit_meows import APSRevit
 from aps_toolkit import Auth
 token = Auth().auth3leg()
 urn = "<urn of item version>"
-revit_meows = APSRevit(urn,token)
+revit_meows = APSRevit(urn,token,region="US")
 df = revit_meows.get_all_data()
 df.to_csv("revit_data.csv")
 ```
@@ -53,6 +53,11 @@ pip install -e .
 ## License
 
 This project is licensed under the Apache License - see the [LICENSE](./License.md) file for details.
+
+## Contributing
+
+This is project just research in my free time and don't have any power to keep it up to date. If you want to contribute, please feel free to fork and submit a pull request.
+
 
 ## Learning Resources
 - [Autodesk Platform Services](https://github.com/autodesk-platform-services)
