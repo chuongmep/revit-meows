@@ -325,12 +325,15 @@ class APSRevit:
         object_ids = df_tree_filter['objectid'].tolist()
         if not object_ids or len(object_ids) == 0:
             return pd.DataFrame()
-        # if object_ids > 1000, split to 1000 object ids
+
         if len(object_ids) > 1000:
-            object_ids = [object_ids[i:i + 1000] for i in range(0, len(object_ids), 1000)]
+            # chuck to list in list
+            object_ids_arrays = [object_ids[i:i + 1000] for i in range(0, len(object_ids), 1000)]
+        else:
+            object_ids_arrays = [object_ids]
         df = pd.DataFrame()
-        for obj_ids in object_ids:
-            df_single = self.get_data_by_object_ids(model_guid, object_ids=obj_ids, is_field_param=is_field_param)
+        for object_ids in object_ids_arrays:
+            df_single = self.get_data_by_object_ids(model_guid, object_ids=object_ids, is_field_param=is_field_param)
             df = pd.concat([df, df_single], ignore_index=True)
         # drop column CatDbId
         df_tree = df_tree.drop(columns=['CatDbId'])

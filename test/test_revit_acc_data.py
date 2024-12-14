@@ -11,14 +11,18 @@ class TestRevitACCData(TestCase):
         self.project_id = "ec0f8261-aeca-4ab9-a1a5-5845f952b17d"
         # read refresh token from config.json file
         file_name = "config.json"
-        if not os.path.exists(file_name):
-            os.mknod(file_name)
-        with open(file_name) as json_file:
+        full_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..','test', file_name))
+        if not os.path.exists(full_path):
+            # create
+            with open(full_path, 'w') as json_file:
+                data = {"refresh_token":""}
+                json.dump(data,json_file,indent=2)
+        with open(full_path) as json_file:
             data = json.load(json_file)
             self.refresh_token = data['refresh_token']
         self.token = Auth.refresh_token_from_env(self.refresh_token)
         # save to json refresh token
-        with open(file_name, 'w') as json_file:
+        with open(full_path, 'w') as json_file:
             data['refresh_token'] = self.token.refresh_token
             json.dump(data,json_file,indent=2)
         self.aps_revit = APSRevit(self.urn, self.token)
@@ -56,7 +60,7 @@ class TestRevitACCData(TestCase):
         print(data)
 
     def test_get_data_by_category(self):
-        data = self.aps_revit.get_data_by_categories(["Mechanical Equipment","Rooms"])
+        data = self.aps_revit.get_data_by_categories(categories=["Walls"])
         self.assertIsNotNone(data)
         self.assertNotEqual(len(data), 0)
         print(data)
