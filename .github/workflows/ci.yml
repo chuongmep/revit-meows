@@ -25,7 +25,7 @@ jobs:
     - name: Install dependencies
       run: |
         # python -m pip install --upgrade pip
-        pip install -r requirements.txt
+        pip install .
 
   publish:
     if: github.ref == 'refs/heads/master'  # Only runs on the master branch
@@ -47,7 +47,6 @@ jobs:
         pip install build twine
         pip install setuptools
         pip install wheel
-        pip install -r requirements.txt
 
     - name: Build package
       working-directory: src
