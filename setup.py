@@ -9,7 +9,8 @@ setup(
     long_description=open("Readme.md").read(),
     long_description_content_type="text/markdown",
     url="https://github.com/chuongmep/revit-meows",
-    packages=find_packages(exclude=["revit*", "aps*",'revit_meows*,aps-toolkit']),
+    package_dir={"": "src"},
+    # packages=find_packages(where="src"),
     include_package_data=True,
     install_requires=[
         "pandas>=2.1.4",
@@ -22,10 +23,5 @@ setup(
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: Apache Software License",
         "Operating System :: OS Independent",
-    ],
-    entry_points={
-        "console_scripts": [
-            # Define command-line scripts here if needed
-        ],
-    },
+    ]
 )
