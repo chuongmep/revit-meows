@@ -8,7 +8,7 @@ The project simplifies data extraction from Revit model in [ACC](https://constru
 ## Installation
 
 ```bash
-pip install revit_meows
+pip install revit_meows --upgrade
 ```
 ## Requirements
 
