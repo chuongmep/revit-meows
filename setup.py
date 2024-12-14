@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="revit_meows",
-    version="0.1.0",
+    version="0.1.1",
     author="chuongmep",
     author_email="chuongpqvn@gmail.com",
     description="A tool for extracting data from Revit ACC",
@@ -18,7 +18,6 @@ setup(
         "aps-toolkit"
     ],
     python_requires=">=3.9",
-    package_dir={"" : "."},
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: Apache Software License",
