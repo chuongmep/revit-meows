@@ -5,11 +5,8 @@ on:
     branches:
       - master
       - dev
-  pull_request:
-
 jobs:
   build:
-    if: github.ref == 'refs/heads/dev'  # Only runs on the dev branch
     runs-on: ubuntu-latest
 
     strategy:
