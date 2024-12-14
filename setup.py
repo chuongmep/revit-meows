@@ -6,7 +6,7 @@ setup(
     author="chuongmep",
     author_email="chuongpqvn@gmail.com",
     description="A tool for extracting data from Revit ACC",
-    long_description=open("README.md").read(),
+    long_description=open("Readme.md").read(),
     long_description_content_type="text/markdown",
     url="https://github.com/chuongmep/revit-meows",
     packages=find_packages(exclude=["revit*", "aps*",'revit_meows*,aps-toolkit']),
