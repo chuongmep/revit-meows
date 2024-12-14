@@ -10,6 +10,16 @@ The project simplifies data extraction from Revit model in [ACC](https://constru
 ```bash
 pip install revit_meows
 ```
+## Requirements
+
+- Python 3.9+
+
+- Setting Environment Variables
+```bash
+APS_CLIENT_PKCE_ID=your_client_id
+APS_CLIENT_ID=your_client_id
+APS_CLIENT_SECRET=your_client_secret
+```
 
 ## Simple Usage
 

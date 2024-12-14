@@ -1,6 +1,6 @@
 from unittest import TestCase
 from aps_toolkit import Auth
-from revit_meows import APSRevit
+from .context import APSRevit
 import os
 import json
 

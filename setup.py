@@ -17,7 +17,8 @@ setup(
         "requests>=2.0",
         "aps-toolkit"
     ],
-    python_requires=">=3.8", 
+    python_requires=">=3.9",
+    package_dir={"": "src"},
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: Apache Software License",
