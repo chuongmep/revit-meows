@@ -170,3 +170,4 @@ cython_debug/
 /test/output/
 /test/notebook/
 *.idea
+.DSStore
