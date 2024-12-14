@@ -1,0 +1,4 @@
+numpy>=1.26.0
+pandas>=2.1.4
+requests>=2.32.3
+aps-toolkit
