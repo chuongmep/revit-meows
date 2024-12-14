@@ -1,20 +1,26 @@
-
 ![](./docs/background.png)
 
 ## Description
 
-The project simplifies data extraction from Revit model in [ACC](https://construction.autodesk.com/) using the Model [Derivative API](https://aps.autodesk.com/en/docs/model-derivative/v2). Leveraging powerful [Python](https://www.python.org/) libraries, it enables efficient visualization and analysis of [Revit](https://www.autodesk.com/sg/products/revit/overview) data.
+The project simplifies data extraction from Revit model in [ACC](https://construction.autodesk.com/) using the
+Model [Derivative API](https://aps.autodesk.com/en/docs/model-derivative/v2). Leveraging
+powerful [Python](https://www.python.org/) libraries, it enables efficient visualization and analysis
+of [Revit](https://www.autodesk.com/sg/products/revit/overview) data. The api released long time but quite complex and
+hard to use, this is library to help you access with easier way.
 
 ## Installation
 
 ```bash
 pip install revit_meows --upgrade
 ```
+
 ## Requirements
 
 - Python 3.9+
 
-- Setting Environment Variables
+- Setting Environment Variables, see
+  Tutorial [Create an App](https://aps.autodesk.com/en/docs/oauth/v2/tutorials/create-app/)
+
 ```bash
 APS_CLIENT_PKCE_ID=your_client_id
 APS_CLIENT_ID=your_client_id
@@ -28,23 +34,27 @@ APS_CLIENT_SECRET=your_client_secret
 ```python
 from revit_meows import APSRevit
 from aps_toolkit import Auth
+
 token = Auth().auth3leg()
 urn = "<urn of item version>"
-revit_meows = APSRevit(urn,token)
+revit_meows = APSRevit(urn, token)
 categories = revit_meows.get_all_categories()
 print(categories)
 ```
 
 - Export All Revit Data To CSV
+
 ```python
 from revit_meows import APSRevit
 from aps_toolkit import Auth
+
 token = Auth().auth3leg()
 urn = "<urn of item version>"
-revit_meows = APSRevit(urn,token,region="US")
+revit_meows = APSRevit(urn, token, region="US")
 df = revit_meows.get_all_data()
 df.to_csv("revit_data.csv")
 ```
+
 Explore more in the [Examples](./docs/example.ipynb).
 
 ## Features
@@ -66,10 +76,11 @@ This project is licensed under the Apache License - see the [LICENSE](./License.
 
 ## Contributing
 
-This is project just research in my free time and don't have any power to keep it up to date. If you want to contribute, please feel free to fork and submit a pull request.
-
+This is project just research in my free time and don't have any power to keep it up to date. If you want to contribute,
+please feel free to fork and submit a pull request.
 
 ## Learning Resources
+
 - [Autodesk Platform Services](https://github.com/autodesk-platform-services)
 
 - [Model Properties API v.s. Model Derivative API](https://aps.autodesk.com/blog/model-properties-api-vs-model-derivative-api)
@@ -82,9 +93,10 @@ This is project just research in my free time and don't have any power to keep i
 
 ```python
 from aps_toolkit import *
-token  = Auth().auth2leg()
+
+token = Auth().auth2leg()
 bim360 = BIM360(token)
-urn = bim360.get_latest_derivative_urn("<project_id>","<folder_id>")
+urn = bim360.get_latest_derivative_urn("<project_id>", "<folder_id>")
 ```
 
 2. You can batch report urn to dataframe from BIM360 class in `aps-toolkit` library.
@@ -92,10 +104,12 @@ urn = bim360.get_latest_derivative_urn("<project_id>","<folder_id>")
 ```python
 from aps_toolkit import BIM360
 from aps_toolkit import Auth
-token  = Auth().auth3leg()
+
+token = Auth().auth3leg()
 bim360 = BIM360(token)
-df = bim360.batch_report_items("<project_id>","<folder_id>",['.rvt'],is_sub_folder=False)
+df = bim360.batch_report_items("<project_id>", "<folder_id>", ['.rvt'], is_sub_folder=False)
 ```
+
 </details>
 
 <details><summary>What is Meows?</summary>
