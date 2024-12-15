@@ -55,6 +55,22 @@ df = revit_meows.get_all_data()
 df.to_csv("revit_data.csv")
 ```
 
+- Export All Data Include Boundingbox To CSV
+
+```python
+from revit_meows import APSRevit
+from aps_toolkit import Auth
+
+token = Auth().auth3leg()
+urn = "<urn of item version>"
+revit_meows = APSRevit(urn, token, region="US")
+df = revit_meows.get_all_data_bbox(project_id="<project_id>", 
+                                   model_guid="<model_guid>", 
+                                   is_field_param=False,
+                                   is_include_category=True)
+df.to_csv("revit_data_bbox.csv")
+```
+
 Explore more in the [Examples](./docs/example.ipynb).
 
 ## Features
