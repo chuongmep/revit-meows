@@ -107,6 +107,7 @@ class APSRevit:
                 df = self._recursive_category(item, category, cat_id, df)
         return df
 
+
     def get_object_tree_category(self, model_guid=None) -> pd.DataFrame:
         """
         Get the object tree category of the model
@@ -348,6 +349,8 @@ class APSRevit:
     def get_bounding_boxs(self, project_id) -> pd.DataFrame:
         item_version = self._urn_to_item_version(self.urn)
         url = f"https://developer.api.autodesk.com/construction/index/v2/projects/{project_id}/indexes:batch-status"
+        if self.token.is_expired(2):
+            raise ValueError("Token is expired")
         headers = {
             "Authorization": f"Bearer {self.token.access_token}",
             "Content-Type": "application/json",
@@ -406,6 +409,8 @@ class APSRevit:
         :param is_include_category:
         :return:
         """
+        if self.token.is_expired(2):
+            raise ValueError("Token is expired")
         df = self.get_all_data(model_guid, is_field_param, is_include_category)
         df_bbox = self.get_bounding_boxs(project_id)
         df_bbox = df_bbox.drop(columns=['object_id'])
