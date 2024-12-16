@@ -31,6 +31,7 @@ class APSRevit:
             self.urn = self._item_version_to_urn(urn)
         self.urn = urn
         self.token = token
+        self.region = region
 
     @staticmethod
     def _urn_to_item_version(urn):
@@ -349,7 +350,8 @@ class APSRevit:
         url = f"https://developer.api.autodesk.com/construction/index/v2/projects/{project_id}/indexes:batch-status"
         headers = {
             "Authorization": f"Bearer {self.token.access_token}",
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            "x-ads-region": self.region
         }
         data = {
             "versions": [{
@@ -364,15 +366,16 @@ class APSRevit:
             response = requests.post(url, headers=headers, json=data)
             version_index_result = response.json()
             time.sleep(2)
-        propertiesUrl = response.json()["indexes"][0]["propertiesUrl"]
+        index_id = response.json()["indexes"][0]["indexId"]
+        propertiesUrl = f"https://developer.api.autodesk.com/construction/index/v2/projects/{project_id}/indexes/{index_id}/properties"
         headers = {
             "Authorization": f"Bearer {self.token.access_token}",
             "Content-Type": "application/json",
-            "Accept-Encoding": "gzip"
+            "x-ads-region": self.region
         }
         property_result = requests.get(propertiesUrl, headers=headers)
         if property_result.status_code != 200:
-            raise requests.exceptions.HTTPError(f"Failed to get bounding box: {property_result.reason}",
+            raise requests.exceptions.HTTPError(f"Failed to get bounding box: {property_result.text}",
                                                 property_result.status_code)
         bytes_io = BytesIO()
         encoding = property_result.headers.get("Content-Encoding")
