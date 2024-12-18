@@ -14,12 +14,17 @@ import zlib
 class APSRevit:
     def __init__(self, urn: str, token: Token, region: str = "US") -> None:
         """
-        Constructor for APSRevit class
-        :param urn: URN of the model or item version :
-        use aps_toolkit.ConvertUtils.parse_acc_url(urn) to get the URN or BIM360.get_latest_derivative_urn(project_id, item_id)
-        :param token: Token object, required for authentication use 3-legged token
-        use aps_toolkit.Auth().auth3leg() to get the token
-        :param region: default is US, the region of the model e.g: US, EMEA
+        Constructor for APSRevit class \n
+        :param urn: URN of the model or item version :\n
+        use aps_toolkit.ConvertUtils.parse_acc_url(urn) to get the URN\n 
+        BIM360.get_latest_derivative_urn(project_id, item_id)\n
+        :param token: Token object, required for authentication\n
+        use 2-Legged/3-legged token for get include bbox \n
+        use aps_toolkit :\n
+        from aps_toolkit import Auth \n
+        auth = Auth().auth3leg() # to get the token or \n 
+        auth = Auth().auth2leg() \n
+        :param region: default is US, the region of the model e.g: US, EMEA \n
         """
         if region.lower() == "emea":
             self.host = "https://developer.api.autodesk.com/modelderivative/v2/regions/eu/designdata"
@@ -361,12 +366,12 @@ class APSRevit:
                 "versionUrn": item_version
             }]
         }
-        response = requests.post(url, headers=headers, json=data)
+        response = requests.post(url, headers=headers, json=data,timeout=10)
         if response.status_code != 200:
             raise requests.exceptions.HTTPError(f"Failed to get bounding box: {response.text}", response.status_code)
         version_index_result = response.json()
         while version_index_result["indexes"][0]["state"] != "FINISHED":
-            response = requests.post(url, headers=headers, json=data)
+            response = requests.post(url, headers=headers, json=data,timeout=10)
             version_index_result = response.json()
             time.sleep(2)
         index_id = response.json()["indexes"][0]["indexId"]
@@ -376,7 +381,7 @@ class APSRevit:
             "Content-Type": "application/json",
             "x-ads-region": self.region
         }
-        property_result = requests.get(propertiesUrl, headers=headers)
+        property_result = requests.get(propertiesUrl, headers=headers, timeout=10)
         if property_result.status_code != 200:
             raise requests.exceptions.HTTPError(f"Failed to get bounding box: {property_result.text}",
                                                 property_result.status_code)
