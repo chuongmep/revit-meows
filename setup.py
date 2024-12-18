@@ -2,11 +2,11 @@ from setuptools import setup, find_packages
 
 setup(
     name="revit_meows",
-    version="0.1.4",
+    version="0.1.5",
     author="chuongmep",
     author_email="chuongpqvn@gmail.com",
     description="A tool for extracting data from Revit ACC",
-    long_description=open("Readme.md").read(),
+    long_description=open("Readme.md", encoding="utf-8").read(),
     long_description_content_type="text/markdown",
     url="https://github.com/chuongmep/revit-meows",
     package_dir={"": "src"},
