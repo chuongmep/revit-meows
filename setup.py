@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="revit_meows",
-    version="0.1.5",
+    version="0.1.6",
     author="chuongmep",
     author_email="chuongpqvn@gmail.com",
     description="A tool for extracting data from Revit ACC",
