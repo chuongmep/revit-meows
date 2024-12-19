@@ -37,6 +37,8 @@ class APSRevit:
         self.urn = urn
         self.token = token
         self.region = region
+        self.manifest = None  # json manifest
+        self.aec_model_info = None  # json aec model info
 
     @staticmethod
     def _urn_to_item_version(urn):
@@ -111,7 +113,6 @@ class APSRevit:
                 # Recurse into child objects
                 df = self._recursive_category(item, category, cat_id, df)
         return df
-
 
     def get_object_tree_category(self, model_guid=None) -> pd.DataFrame:
         """
@@ -366,12 +367,12 @@ class APSRevit:
                 "versionUrn": item_version
             }]
         }
-        response = requests.post(url, headers=headers, json=data,timeout=10)
+        response = requests.post(url, headers=headers, json=data, timeout=10)
         if response.status_code != 200:
             raise requests.exceptions.HTTPError(f"Failed to get bounding box: {response.text}", response.status_code)
         version_index_result = response.json()
         while version_index_result["indexes"][0]["state"] != "FINISHED":
-            response = requests.post(url, headers=headers, json=data,timeout=10)
+            response = requests.post(url, headers=headers, json=data, timeout=10)
             version_index_result = response.json()
             time.sleep(2)
         index_id = response.json()["indexes"][0]["indexId"]
@@ -421,3 +422,115 @@ class APSRevit:
         df_bbox = df_bbox.drop(columns=['object_id'])
         df_merge = pd.merge(df, df_bbox, on="externalId")
         return df_merge
+
+    def get_manifest(self):
+        url = f"{self.host}/{self.urn}/manifest"
+        headers = {
+            "Authorization": f"Bearer {self.token.access_token}"
+        }
+        response = requests.get(url, headers=headers)
+        if response.status_code != 200:
+            raise requests.exceptions.HTTPError(f"Failed to get manifest: {response.text}", response.status_code)
+        return response.json()
+
+    def get_aec_model_info(self):
+        if self.manifest is None:
+            self.manifest = self.get_manifest()
+        childs = self.manifest["derivatives"][0]["children"]
+        aec_urn = [child["urn"] for child in childs if child["role"] == "Autodesk.AEC.ModelData"][0]
+        if aec_urn is None:
+            raise ValueError("can't find aec model urn")
+        url = f"{self.host}/{self.urn}/manifest/{aec_urn}"
+        headers = {
+            "Authorization": f"Bearer {self.token.access_token}"
+        }
+        response_aec_model = requests.get(url, headers=headers)
+        if response_aec_model.status_code != 200:
+            raise requests.exceptions.HTTPError(f"Failed to get aec model info: {response_aec_model.text}",
+                                                response_aec_model.status_code)
+        return response_aec_model.json()
+
+    def get_derivatives(self) -> pd.DataFrame:
+        if self.manifest is None:
+            self.manifest = self.get_manifest()
+        derivatives = self.manifest["derivatives"]
+        derivatives_df = pd.json_normalize(derivatives)
+        return derivatives_df
+
+    def get_document_id(self) -> str:
+        if self.aec_model_info is None:
+            self.aec_model_info = self.get_aec_model_info()
+
+        if "documentId" not in self.aec_model_info:
+            raise ValueError("can't find documentId")
+        return self.aec_model_info["documentId"]
+
+    def get_phases(self) -> pd.DataFrame:
+        if self.aec_model_info is None:
+            self.aec_model_info = self.get_aec_model_info()
+        if "phases" not in self.aec_model_info:
+            raise ValueError("can't find phases")
+        phases = self.aec_model_info["phases"]
+        phases_df = pd.DataFrame(phases)
+        return phases_df
+
+    def get_levels(self) -> pd.DataFrame:
+        if self.aec_model_info is None:
+            self.aec_model_info = self.get_aec_model_info()
+        if "levels" not in self.aec_model_info:
+            raise ValueError("can't find levels")
+        levels = self.aec_model_info["levels"]
+        levels_df = pd.json_normalize(levels)
+        levels_df["elevation"] = levels_df["elevation"].astype(float)
+        levels_df["height"] = levels_df["height"].astype(float)
+        return levels_df
+
+    def get_scopeBoxes(self) -> pd.DataFrame:
+        if self.aec_model_info is None:
+            self.aec_model_info = self.get_aec_model_info()
+        if "scopeBoxes" not in self.aec_model_info:
+            raise ValueError("can't find scopeBoxes")
+        scope_boxes = self.aec_model_info["scopeBoxes"]
+        scope_boxes_df = pd.json_normalize(scope_boxes)
+        return scope_boxes_df
+
+    def get_ref_point_transformation(self) -> pd.DataFrame:
+        if self.aec_model_info is None:
+            self.aec_model_info = self.get_aec_model_info()
+        if "refPointTransformation" not in self.aec_model_info:
+            raise ValueError("can't find refPointTransformation")
+        refPointTransformation = self.aec_model_info["refPointTransformation"]
+        new_df = pd.DataFrame()
+        for i in range(4):
+            new_df[f"col{i + 1}"] = refPointTransformation[i * 3:i * 3 + 3]
+        new_df.reindex()
+        # rename columns x,y,z,t
+        new_df.columns = ["x", "y", "z", "t"]
+        return new_df
+
+    def get_grids(self) -> pd.DataFrame:
+        if self.aec_model_info is None:
+            self.aec_model_info = self.get_aec_model_info()
+        if "grids" not in self.aec_model_info:
+            raise ValueError("can't find grids")
+        grids = self.aec_model_info["grids"]
+        grids_df = pd.json_normalize(grids)
+        return grids_df
+
+    def get_linked_documents(self) -> pd.DataFrame:
+        if self.aec_model_info is None:
+            self.aec_model_info = self.get_aec_model_info()
+        if "linkedDocuments" not in self.aec_model_info:
+            raise ValueError("can't find linkedDocuments")
+        linked_documents = self.aec_model_info["linkedDocuments"]
+        linked_documents_df = pd.json_normalize(linked_documents)
+        return linked_documents_df
+
+    def get_location_parameters(self) -> pd.DataFrame:
+        if self.aec_model_info is None:
+            self.aec_model_info = self.get_aec_model_info()
+        if "locationParameters" not in self.aec_model_info:
+            raise ValueError("can't find locationParameters")
+        location_parameters = self.aec_model_info["locationParameters"]
+        location_parameters_df = pd.json_normalize(location_parameters)
+        return location_parameters_df

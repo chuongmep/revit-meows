@@ -1,6 +1,6 @@
 from unittest import TestCase
 from aps_toolkit import Auth
-from .context import APSRevit
+from revit_meows import APSRevit
 import os
 import json
 
@@ -14,15 +14,15 @@ class TestRevitACCData(TestCase):
         full_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..','test', file_name))
         if not os.path.exists(full_path):
             # create
-            with open(full_path, 'w') as json_file:
+            with open(full_path, 'w', encoding='utf-8') as json_file:
                 data = {"refresh_token":""}
                 json.dump(data,json_file,indent=2)
-        with open(full_path) as json_file:
+        with open(full_path, encoding='utf-8') as json_file:
             data = json.load(json_file)
             self.refresh_token = data['refresh_token']
         self.token = Auth.refresh_token_from_env(self.refresh_token)
         # save to json refresh token
-        with open(full_path, 'w') as json_file:
+        with open(full_path, 'w', encoding='utf-8') as json_file:
             data['refresh_token'] = self.token.refresh_token
             json.dump(data,json_file,indent=2)
         self.aps_revit = APSRevit(self.urn, self.token)
