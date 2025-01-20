@@ -76,7 +76,12 @@ class APSRevit:
 
     def get_master_view_model_guid(self) -> str:
         df_model_guid = self.get_model_guid()
-        model_guid = df_model_guid[df_model_guid['isMasterView'] == True]['guid'].values[0]
+        if df_model_guid.empty:
+            raise ValueError("No model guid found")
+        if 'isMasterView' in df_model_guid.columns:
+            model_guid = df_model_guid[df_model_guid['isMasterView'] is True]['guid'].values[0]
+        else:
+            model_guid = df_model_guid['guid'].values[0]
         return model_guid
 
     def get_all_categories(self, model_guid=None) -> list[str]:
